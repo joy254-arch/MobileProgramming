@@ -1,101 +1,57 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+package com.example.callapplication;
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="126dp"
-        android:layout_marginBottom="617dp"
-        android:text="Simple Calc"
-        android:textSize="32dp" />
+import android.os.Bundle;
+import android.content.Intent;
+import android.provider.ContactsContract;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="123dp"
-        android:layout_marginBottom="510dp"
-        android:ems="10"
-        android:hint="Enter Number 1"
-        android:inputType="text"
-        android:text="" />
+import androidx.appcompat.app.AppCompatActivity;
 
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="123dp"
-        android:layout_marginBottom="439dp"
-        android:ems="10"
-        android:hint="Enter Number 2"
-        android:inputType="text"
-        android:text="" />
+public class MainActivity extends AppCompatActivity {
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="216dp"
-        android:layout_marginBottom="366dp"
-        android:text="0"
-        android:textSize="36dp" />
+    EditText editText;
+    Button clearBtn, callBtn, saveBtn;
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="103dp"
-        android:layout_height="49dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="255dp"
-        android:onClick="add"
-        android:layout_marginBottom="261dp"
-        android:text="ADD" />
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="110dp"
-        android:layout_height="49dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="66dp"
-        android:onClick="sub"
-        android:layout_marginBottom="261dp"
-        android:text="SUB" />
+        editText = findViewById(R.id.editTextPhone);
+        clearBtn = findViewById(R.id.btn_clear);
+        callBtn = findViewById(R.id.btn_call);
+        saveBtn = findViewById(R.id.btn_save);
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="106dp"
-        android:layout_height="53dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="257dp"
-        android:onClick="mul"
-        android:layout_marginBottom="156dp"
-        android:text="MUL" />
+        clearBtn.setOnClickListener(v -> editText.setText(""));
 
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="97dp"
-        android:layout_height="55dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="70dp"
-        android:onClick="div"
-        android:layout_marginBottom="156dp"
-        android:text="DIV" />
-</RelativeLayout>
+        callBtn.setOnClickListener(v -> {
+            String number = editText.getText().toString();
+
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(android.net.Uri.parse("tel:" + number));
+
+            startActivity(intent);
+        });
+
+        saveBtn.setOnClickListener(v -> {
+            String number = editText.getText().toString();
+
+            Intent intent = new Intent(Intent.ACTION_INSERT);
+            intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+            intent.putExtra(ContactsContract.Intents.Insert.PHONE, number);
+
+            startActivity(intent);
+        });
+    }
+
+    public void inputNumber(View view) {
+        Button btn = (Button) view;
+
+        String digit = btn.getText().toString();
+        String phoneNumber = editText.getText().toString();
+
+        editText.setText(phoneNumber + digit);
+    }
+}
