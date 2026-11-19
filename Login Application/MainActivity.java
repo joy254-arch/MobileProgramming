@@ -1,63 +1,104 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+package com.example.loginapplication;
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.131" />
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
-    <EditText
-        android:id="@+id/editTextEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        android:hint="Enter Email Address"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.326" />
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 
-    <EditText
-        android:id="@+id/editTextPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPassword"
-        android:hint="Enter Password"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.434" />
+import com.example.loginapplication.LoginActivity;
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:onClick="login"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.612" />
+import java.util.regex.Pattern;
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+public class MainActivity extends AppCompatActivity {
+
+    EditText emailText, passwordText;
+
+    Pattern lowercase = Pattern.compile("^.*[a-z].*$");
+    Pattern uppercase = Pattern.compile("^.*[A-Z].*$");
+    Pattern number = Pattern.compile("^.*[0-9].*$");
+    Pattern schar = Pattern.compile("^.*[^a-zA-Z0-9].*$");
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        WindowCompat.enableEdgeToEdge(getWindow());
+
+        setContentView(R.layout.activity_main);
+
+        emailText = findViewById(R.id.editTextEmail);
+        passwordText = findViewById(R.id.editTextPassword);
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+                findViewById(R.id.main), (v, insets) -> {
+
+                    Insets systemBars = insets.getInsets(
+                            WindowInsetsCompat.Type.systemBars());
+
+                    v.setPadding(
+                            systemBars.left,
+                            systemBars.top,
+                            systemBars.right,
+                            systemBars.bottom
+                    );
+
+                    return insets;
+                });
+    }
+
+    public void signup(View view) {
+
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
+
+        if (!isValidPassword(password)) {
+
+            Toast.makeText(
+                    this,
+                    "Password does not match the rules",
+                    Toast.LENGTH_LONG
+            ).show();
+
+            return;
+        }
+
+        Intent intent = new Intent(this,LoginActivity.class);
+
+        intent.putExtra("email", email);
+        intent.putExtra("password", password);
+
+        startActivity(intent);
+    }
+
+    private boolean isValidPassword(String password) {
+
+        if (password.length() < 8) {
+            return false;
+        }
+
+        if (!lowercase.matcher(password).matches()) {
+            return false;
+        }
+
+        if (!uppercase.matcher(password).matches()) {
+            return false;
+        }
+
+        if (!number.matcher(password).matches()) {
+            return false;
+        }
+
+        if (!schar.matcher(password).matches()) {
+            return false;
+        }
+
+        return true;
+    }
+}
